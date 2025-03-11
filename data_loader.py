@@ -5,15 +5,16 @@ import sqlalchemy
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
-# ✅ Load environment variables
-load_dotenv("/usr/app/.env")
+# ✅ Load environment variables from Streamlit Secrets or .env file
+if os.path.exists("/usr/app/.env"):  
+    load_dotenv("/usr/app/.env")
 
-# ✅ Database connection settings
-DB_HOST = os.getenv("DB_HOST", "postgres_db_tfl_accident_data")  
-DB_PORT = os.getenv("DB_PORT", "5432")  
-DB_NAME = os.getenv("DB_NAME", "tfl_accidents")
-DB_USER = os.getenv("DB_USER", "odiurdigital")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "local")
+# ✅ Cloud SQL Database connection settings
+DB_HOST = os.getenv("CLOUD_SQL_HOST", "your-cloudsql-instance-ip")  # Replace with actual Cloud SQL IP
+DB_PORT = os.getenv("CLOUD_SQL_PORT", "5432")  
+DB_NAME = os.getenv("CLOUD_SQL_DB", "your_database")  
+DB_USER = os.getenv("CLOUD_SQL_USER", "your_user")  
+DB_PASSWORD = os.getenv("CLOUD_SQL_PASS", "your_password")  
 
 # ✅ Create SQLAlchemy engine
 engine = create_engine(f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
@@ -300,3 +301,20 @@ def get_fatalities_by_age(where_clause):
         ORDER BY age_group;
     """
     return fetch_data(query)
+
+def test_connection():
+    """Check if the Cloud SQL connection is working."""
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
+        print("✅ Successfully connected to Cloud SQL!")
+        conn.close()
+    except Exception as e:
+        print(f"❌ Cloud SQL Connection Failed: {e}")
+
+test_connection()  # Run this test
