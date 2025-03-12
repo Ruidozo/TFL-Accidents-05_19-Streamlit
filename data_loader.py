@@ -4,17 +4,18 @@ import psycopg2
 import sqlalchemy
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+import streamlit as st
 
 # ✅ Load environment variables from Streamlit Secrets or .env file
 if os.path.exists("/usr/app/.env"):  
     load_dotenv("/usr/app/.env")
 
 # ✅ Cloud SQL Database connection settings
-DB_HOST = os.getenv("CLOUD_SQL_HOST", "your-cloudsql-instance-ip")  # Replace with actual Cloud SQL IP
-DB_PORT = os.getenv("CLOUD_SQL_PORT", "5432")  
-DB_NAME = os.getenv("CLOUD_SQL_DB", "your_database")  
-DB_USER = os.getenv("CLOUD_SQL_USER", "your_user")  
-DB_PASSWORD = os.getenv("CLOUD_SQL_PASS", "your_password")  
+DB_HOST = st.secrets["database"]["DB_HOST"]
+DB_PORT = st.secrets["database"]["DB_PORT"]
+DB_NAME = st.secrets["database"]["DB_NAME"]
+DB_USER = st.secrets["database"]["DB_USER"]
+DB_PASSWORD = st.secrets["database"]["DB_PASSWORD"] 
 
 # ✅ Create SQLAlchemy engine
 engine = create_engine(f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
